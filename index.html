@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>mohitkhare - Developer Utilities and AI Engineering Tools</title>
+    <meta name="description" content="A Python toolkit of practical developer utilities for text processing, LLM token estimation, and dev productivity. Zero dependencies.">
+    <link rel="canonical" href="https://arnaudleroy-studio.github.io/mohitkhare-python/">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #ffffff;
+            --bg-code: #f6f8fa;
+            --bg-code-block: #0d1117;
+            --text: #1f2328;
+            --text-secondary: #656d76;
+            --text-code: #e6edf3;
+            --border: #d0d7de;
+            --accent: #0969da;
+            --accent-hover: #0550ae;
+            --badge-bg: #ddf4ff;
+            --badge-text: #0969da;
+            --green: #1a7f37;
+            --green-bg: #dafbe1;
+            --sidebar-bg: #f6f8fa;
+            --sidebar-border: #d0d7de;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+            color: var(--text);
+            background: var(--bg);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        code, pre {
+            font-family: 'JetBrains Mono', 'SF Mono', 'Consolas', 'Liberation Mono', monospace;
+        }
+
+        /* Layout */
+        .page {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 260px;
+            flex-shrink: 0;
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--sidebar-border);
+            padding: 24px 0;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid var(--sidebar-border);
+            margin-bottom: 16px;
+        }
+
+        .sidebar-header h2 {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 4px;
+        }
+
+        .sidebar-header p {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .sidebar nav {
+            padding: 0 12px;
+        }
+
+        .sidebar nav a {
+            display: block;
+            padding: 6px 8px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: 6px;
+            transition: background 0.15s, color 0.15s;
+        }
+
+        .sidebar nav a:hover {
+            background: rgba(0, 0, 0, 0.05);
+            color: var(--text);
+        }
+
+        .sidebar nav .section-label {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-secondary);
+            padding: 16px 8px 4px;
+        }
+
+        .sidebar nav .section-label:first-child {
+            padding-top: 0;
+        }
+
+        .main {
+            flex: 1;
+            max-width: 820px;
+            padding: 40px 48px 80px;
+        }
+
+        /* Header */
+        .doc-header {
+            margin-bottom: 40px;
+            padding-bottom: 32px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .doc-header h1 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
+        }
+
+        .doc-header h1 code {
+            font-weight: 700;
+            font-size: 32px;
+        }
+
+        .doc-header .tagline {
+            font-size: 17px;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+
+        .badges {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            padding: 4px 10px;
+            border-radius: 20px;
+            text-decoration: none;
+            transition: opacity 0.15s;
+        }
+
+        .badge:hover {
+            opacity: 0.85;
+        }
+
+        .badge-blue {
+            background: var(--badge-bg);
+            color: var(--badge-text);
+        }
+
+        .badge-green {
+            background: var(--green-bg);
+            color: var(--green);
+        }
+
+        /* Sections */
+        section {
+            margin-bottom: 48px;
+        }
+
+        h2 {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border);
+            letter-spacing: -0.3px;
+        }
+
+        h3 {
+            font-size: 17px;
+            font-weight: 600;
+            margin-top: 32px;
+            margin-bottom: 12px;
+            color: var(--text);
+        }
+
+        p {
+            margin-bottom: 12px;
+            color: var(--text);
+        }
+
+        /* Install block */
+        .install-block {
+            background: var(--bg-code-block);
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .install-block code {
+            color: var(--text-code);
+            font-size: 14px;
+        }
+
+        .install-block .prompt {
+            color: #7ee787;
+            user-select: none;
+        }
+
+        /* Code blocks */
+        pre {
+            background: var(--bg-code-block);
+            border-radius: 8px;
+            padding: 16px 20px;
+            overflow-x: auto;
+            margin-bottom: 16px;
+            font-size: 13px;
+            line-height: 1.55;
+        }
+
+        pre code {
+            color: var(--text-code);
+        }
+
+        .code-comment {
+            color: #8b949e;
+        }
+
+        .code-string {
+            color: #a5d6ff;
+        }
+
+        .code-keyword {
+            color: #ff7b72;
+        }
+
+        .code-func {
+            color: #d2a8ff;
+        }
+
+        .code-number {
+            color: #79c0ff;
+        }
+
+        .code-output {
+            color: #8b949e;
+        }
+
+        .code-decorator {
+            color: #ffa657;
+        }
+
+        /* Inline code */
+        :not(pre) > code {
+            background: var(--bg-code);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.88em;
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        /* Function reference */
+        .func-signature {
+            background: var(--bg-code);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin-bottom: 12px;
+        }
+
+        .func-signature code {
+            font-size: 14px;
+            font-weight: 500;
+            border: none;
+            background: none;
+            padding: 0;
+        }
+
+        .func-desc {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+
+        .param-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+
+        .param-table th {
+            text-align: left;
+            padding: 8px 12px;
+            background: var(--bg-code);
+            border: 1px solid var(--border);
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            color: var(--text-secondary);
+        }
+
+        .param-table td {
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            vertical-align: top;
+        }
+
+        .param-table td code {
+            font-size: 12px;
+        }
+
+        /* Links */
+        a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        /* Feature grid */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .feature-card {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+        }
+
+        .feature-card h4 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .feature-card p {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 0;
+        }
+
+        /* Footer */
+        .doc-footer {
+            margin-top: 64px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border);
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .doc-footer a {
+            color: var(--text-secondary);
+        }
+
+        .doc-footer a:hover {
+            color: var(--accent);
+        }
+
+        /* Mobile */
+        .mobile-header {
+            display: none;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            background: var(--sidebar-bg);
+        }
+
+        .mobile-header h2 {
+            font-size: 16px;
+            border: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                display: none;
+            }
+
+            .mobile-header {
+                display: block;
+            }
+
+            .main {
+                padding: 24px 20px 60px;
+            }
+
+            .doc-header h1 {
+                font-size: 26px;
+            }
+
+            .doc-header h1 code {
+                font-size: 26px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="mobile-header">
+        <h2>mohitkhare</h2>
+    </div>
+
+    <div class="page">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>mohitkhare</h2>
+                <p>v0.1.0</p>
+            </div>
+            <nav>
+                <div class="section-label">Getting Started</div>
+                <a href="#installation">Installation</a>
+                <a href="#quickstart">Quick Start</a>
+
+                <div class="section-label">Text Utilities</div>
+                <a href="#slugify">slugify</a>
+                <a href="#truncate">truncate</a>
+                <a href="#chunk_text">chunk_text</a>
+                <a href="#word_count">word_count</a>
+                <a href="#reading_time">reading_time</a>
+
+                <div class="section-label">Token Estimation</div>
+                <a href="#estimate_tokens">estimate_tokens</a>
+                <a href="#estimate_cost">estimate_cost</a>
+
+                <div class="section-label">Dev Utilities</div>
+                <a href="#timer">timer</a>
+                <a href="#retry">retry</a>
+                <a href="#flatten">flatten</a>
+                <a href="#chunk_list">chunk_list</a>
+                <a href="#dedupe">dedupe</a>
+
+                <div class="section-label">Links</div>
+                <a href="https://mohitkhare.me" rel="noopener">Homepage</a>
+                <a href="https://mohitkhare.me/blog" rel="noopener">Blog</a>
+                <a href="https://pypi.org/project/mohitkhare/" rel="noopener">PyPI</a>
+                <a href="https://github.com/arnaudleroy-studio/mohitkhare-python" rel="noopener">Source Code</a>
+            </nav>
+        </aside>
+
+        <main class="main">
+            <div class="doc-header">
+                <h1><code>mohitkhare</code></h1>
+                <p class="tagline">A Python toolkit of practical developer utilities for text processing, LLM token estimation, and everyday dev productivity. Zero dependencies. Python 3.9+.</p>
+                <div class="badges">
+                    <a href="https://pypi.org/project/mohitkhare/" class="badge badge-blue" rel="noopener">PyPI v0.1.0</a>
+                    <a href="https://mohitkhare.me" class="badge badge-blue" rel="noopener">mohitkhare.me</a>
+                    <span class="badge badge-green">Python 3.9+</span>
+                    <span class="badge badge-green">Zero Dependencies</span>
+                </div>
+            </div>
+
+            <!-- Installation -->
+            <section id="installation">
+                <h2>Installation</h2>
+                <div class="install-block">
+                    <code><span class="prompt">$ </span>pip install mohitkhare</code>
+                </div>
+                <p>No external dependencies required. Works with Python 3.9 through 3.13.</p>
+            </section>
+
+            <!-- Quick Start -->
+            <section id="quickstart">
+                <h2>Quick Start</h2>
+                <pre><code><span class="code-keyword">from</span> mohitkhare <span class="code-keyword">import</span> slugify, estimate_tokens, retry, flatten
+
+<span class="code-comment"># Text processing</span>
+<span class="code-func">slugify</span>(<span class="code-string">"Hello World!"</span>)
+<span class="code-output"># 'hello-world'</span>
+
+<span class="code-comment"># LLM token estimation (no tokenizer needed)</span>
+<span class="code-func">estimate_tokens</span>(<span class="code-string">"Summarize this document."</span>, model=<span class="code-string">"claude-sonnet"</span>)
+<span class="code-output"># 7</span>
+
+<span class="code-comment"># Retry with exponential backoff</span>
+<span class="code-decorator">@retry</span>(max_attempts=<span class="code-number">3</span>, delay=<span class="code-number">1.0</span>)
+<span class="code-keyword">def</span> <span class="code-func">call_api</span>():
+    <span class="code-keyword">return</span> requests.get(<span class="code-string">"https://api.example.com/data"</span>)
+
+<span class="code-comment"># Flatten nested structures</span>
+<span class="code-func">flatten</span>([[<span class="code-number">1</span>, <span class="code-number">2</span>], [<span class="code-number">3</span>, [<span class="code-number">4</span>, <span class="code-number">5</span>]]])
+<span class="code-output"># [1, 2, 3, 4, 5]</span></code></pre>
+
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h4>Text Processing</h4>
+                        <p>Slugify, truncate, chunk text, word count, and reading time estimation.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>Token Estimation</h4>
+                        <p>Estimate LLM token counts and API costs without requiring a tokenizer library.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>Dev Productivity</h4>
+                        <p>Retry decorator, execution timer, list chunking, deduplication, and nested flattening.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>Zero Dependencies</h4>
+                        <p>Pure Python. No external packages. Installs instantly, works everywhere.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Text Utilities -->
+            <section>
+                <h2>Text Utilities</h2>
+                <p>Functions for common text processing tasks. Imported from <code>mohitkhare.text</code>.</p>
+
+                <h3 id="slugify">slugify</h3>
+                <div class="func-signature">
+                    <code>slugify(text, *, separator="-", max_length=200) -> str</code>
+                </div>
+                <p class="func-desc">Convert any text into a URL-safe slug. Handles Unicode normalization, strips special characters, and collapses whitespace.</p>
+                <table class="param-table">
+                    <tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr>
+                    <tr><td><code>text</code></td><td><code>str</code></td><td>required</td><td>Input text to slugify</td></tr>
+                    <tr><td><code>separator</code></td><td><code>str</code></td><td><code>"-"</code></td><td>Word separator character</td></tr>
+                    <tr><td><code>max_length</code></td><td><code>int</code></td><td><code>200</code></td><td>Maximum slug length</td></tr>
+                </table>
+                <pre><code><span class="code-keyword">from</span> mohitkhare <span class="code-keyword">import</span> slugify
+
+<span class="code-func">slugify</span>(<span class="code-string">"Hello World!"</span>)
+<span class="code-output"># 'hello-world'</span>
+
+<span class="code-func">slugify</span>(<span class="code-string">"Cafe &amp; Restaurant, Paris"</span>)
+<span class="code-output"># 'cafe-restaurant-paris'</span>
+
+<span class="code-func">slugify</span>(<span class="code-string">"Blog Post #42"</span>, separator=<span class="code-string">"_"</span>)
+<span class="code-output"># 'blog_post_42'</span></code></pre>
+
+                <h3 id="truncate">truncate</h3>
+                <div class="func-signature">
+                    <code>truncate(text, length, *, suffix="...") -> str</code>
+                </div>
+                <p class="func-desc">Truncate text to a maximum length, appending a suffix when the text is cut. The suffix length is included in the total length.</p>
+                <table class="param-table">
+                    <tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr>
+                    <tr><td><code>text</code></td><td><code>str</code></td><td>required</td><td>Input text</td></tr>
+                    <tr><td><code>length</code></td><td><code>int</code></td><td>required</td><td>Maximum total length including suffix</td></tr>
+                    <tr><td><code>suffix</code></td><td><code>str</code></td><td><code>"..."</code></td><td>Truncation indicator</td></tr>
+                </table>
+                <pre><code><span class="code-keyword">from</span> mohitkhare <span class="code-keyword">import</span> truncate
+
+<span class="code-func">truncate</span>(<span class="code-string">"Hello World"</span>, <span class="code-number">8</span>)
+<span class="code-output"># 'Hell...'</span>
+
+<span class="code-func">truncate</span>(<span class="code-string">"Short"</span>, <span class="code-number">10</span>)
+<span class="code-output"># 'Short'</span></code></pre>
+
+                <h3 id="chunk_text">chunk_text</h3>
+                <div class="func-signature">
+                    <code>chunk_text(text, max_chars=4000, *, overlap=200) -> list[str]</code>
+                </div>
+                <p class="func-desc">Split long text into overlapping chunks for LLM processing. Splits on sentence boundaries when possible, ensuring no context is lost between chunks.</p>
+                <table class="param-table">
+                    <tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr>
+                    <tr><td><code>text</code></td><td><code>str</code></td><td>required</td><td>Input text to split</td></tr>
+                    <tr><td><code>max_chars</code></td><td><code>int</code></td><td><code>4000</code></td><td>Maximum characters per chunk</td></tr>
+                    <tr><td><code>overlap</code></td><td><code>int</code></td><td><code>200</code></td><td>Character overlap between consecutive chunks</td></tr>
+                </table>
+                <pre><code><span class="code-keyword">from</span> mohitkhare <span class="code-keyword">import</span> chunk_text
+
+document = open(<span class="code-string">"large_file.txt"</span>).read()
+chunks = <span class="code-func">chunk_text</span>(document, max_chars=<span class="code-number">2000</span>, overlap=<span class="code-number">100</span>)
+
+<span class="code-keyword">for</span> chunk <span class="code-keyword">in</span> chunks:
+    response = llm.complete(chunk)  <span class="code-comment"># process each chunk</span></code></pre>
+
+                <h3 id="word_count">word_count</h3>
+                <div class="func-signature">
+                    <code>word_count(text) -> int</code>
+                </div>
+                <p class="func-desc">Count the number of words in a string.</p>
+                <pre><code><span class="code-keyword">from</span> mohitkhare <span class="code-keyword">import</span> word_count
+
+<span class="code-func">word_count</span>(<span class="code-string">"The quick brown fox"</span>)
+<span class="code-output"># 4</span></code></pre>
+
+                <h3 id="reading_time">reading_time</h3>
+                <div class="func-signature">
+                    <code>reading_time(text, *, wpm=238) -> str</code>
+                </div>
+                <p class="func-desc">Estimate reading time for a block of text. Uses 238 words per minute as the default adult reading speed.</p>
+                <table class="param-table">
+                    <tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr>
+                    <tr><td><code>text</code></td><td><code>str</code></td><td>required</td><td>Input text</td></tr>
+                    <tr><td><code>wpm</code></td><td><code>int</code></td><td><code>238</code></td><td>Reading speed in words per minute</td></tr>
+                </table>
+                <pre><code><span class="code-keyword">from</span> mohitkhare <span class="code-keyword">import</span> reading_time
+
+article = <span class="code-string">"word "</span> * <span class="code-number">500</span>
+<span class="code-func">reading_time</span>(article)
+<span class="code-output"># '2 min read'</span></code></pre>
+            </section>
+
+            <!-- Token Estimation -->
+            <section>
+                <h2>Token Estimation</h2>
+                <p>Approximate LLM token counts and API costs without installing a tokenizer. Useful for budgeting, rate limit planning, and quick sanity checks. Imported from <code>mohitkhare.tokens</code>.</p>
+
+                <h3 id="estimate_tokens">estimate_tokens</h3>
+                <div class="func-signature">
+                    <code>estimate_tokens(text, *, model="gpt-4o") -> int</code>
+                </div>
+                <p class="func-desc">Estimate the number of tokens a string will consume for a given model family. Uses character-based heuristics tuned per model family. For exact counts, use the model's official tokenizer.</p>
+                <table class="param-table">
+                    <tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr>
+                    <tr><td><code>text</code></td><td><code>str</code></td><td>required</td><td>Input text</td></tr>
+                    <tr><td><code>model</code></td><td><code>str</code></td><td><code>"gpt-4o"</code></td><td>Model family: gpt-4, gpt-4o, gpt-3.5, claude, claude-sonnet, claude-haiku, llama, mistral, gemini</td></tr>
+                </table>
+                <pre><code><span class="code-keyword">from</span> mohitkhare <span class="code-keyword">import</span> estimate_tokens
+
+<span class="code-func">estimate_tokens</span>(<span class="code-string">"Hello, how are you?"</span>)
+<span class="code-output"># 5</span>
+
+<span class="code-func">estimate_tokens</span>(<span class="code-string">"A "</span> * <span class="code-number">1000</span>, model=<span class="code-string">"claude"</span>)
+<span class="code-output"># 560</span></code></pre>
+
+                <h3 id="estimate_cost">estimate_cost</h3>
+                <div class="func-signature">
+                    <code>estimate_cost(text, *, model="gpt-4o", is_output=False) -> str</code>
+                </div>
+                <p class="func-desc">Estimate the API cost for processing text with a given model. Returns a formatted dollar string. Supports input and output pricing.</p>
+                <table class="param-table">
+                    <tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr>
+                    <tr><td><code>text</code></td><td><code>str</code></td><td>required</td><td>Input or output text</td></tr>
+                    <tr><td><code>model</code></td><td><code>str</code></td><td><code>"gpt-4o"</code></td><td>Model name: gpt-4o, gpt-4, gpt-3.5, claude-opus, claude-sonnet, claude-haiku, gemini-pro, llama-70b, mistral-large</td></tr>
+                    <tr><td><code>is_output</code></td><td><code>bool</code></td><td><code>False</code></td><td>If True, use output pricing (typically 4x input)</td></tr>
+                </table>
+                <pre><code><span class="code-keyword">from</span> mohitkhare <span class="code-keyword">import</span> estimate_cost
+
+<span class="code-func">estimate_cost</span>(<span class="code-string">"A "</span> * <span class="code-number">10000</span>, model=<span class="code-string">"gpt-4o"</span>)
+<span class="code-output"># '$0.0050'</span>
+
+<span class="code-func">estimate_cost</span>(<span class="code-string">"Short response"</span>, model=<span class="code-string">"claude-haiku"</span>)
+<span class="code-output"># '$0.0000'</span>
+
+<span class="code-comment"># Output tokens cost more</span>
+<span class="code-func">estimate_cost</span>(<span class="code-string">"Generated text..."</span>, model=<span class="code-string">"gpt-4"</span>, is_output=<span class="code-keyword">True</span>)
+<span class="code-output"># '$0.0048'</span></code></pre>
+            </section>
+
+            <!-- Dev Utilities -->
+            <section>
+                <h2>Dev Utilities</h2>
+                <p>Decorators and helper functions for everyday Python development. Imported from <code>mohitkhare.dev</code>.</p>
+
+                <h3 id="timer">timer</h3>
+                <div class="func-signature">
+                    <code>@timer</code>
+                </div>
+                <p class="func-desc">Decorator that measures and prints execution time of a function.</p>
+                <pre><code><span class="code-keyword">from</span> mohitkhare <span class="code-keyword">import</span> timer
+
+<span class="code-decorator">@timer</span>
+<span class="code-keyword">def</span> <span class="code-func">process_data</span>(records):
+    <span class="code-keyword">return</span> [transform(r) <span class="code-keyword">for</span> r <span class="code-keyword">in</span> records]
+
+<span class="code-func">process_data</span>(my_records)
+<span class="code-output"># process_data took 0.342s</span></code></pre>
+
+                <h3 id="retry">retry</h3>
+                <div class="func-signature">
+                    <code>@retry(max_attempts=3, delay=1.0, backoff=2.0, exceptions=(Exception,))</code>
+                </div>
+                <p class="func-desc">Decorator for retrying failed function calls with exponential backoff. Catches specified exception types and retries up to the maximum number of attempts.</p>
+                <table class="param-table">
+                    <tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr>
+                    <tr><td><code>max_attempts</code></td><td><code>int</code></td><td><code>3</code></td><td>Maximum number of attempts</td></tr>
+                    <tr><td><code>delay</code></td><td><code>float</code></td><td><code>1.0</code></td><td>Initial delay between retries in seconds</td></tr>
+                    <tr><td><code>backoff</code></td><td><code>float</code></td><td><code>2.0</code></td><td>Multiplier applied to delay after each retry</td></tr>
+                    <tr><td><code>exceptions</code></td><td><code>tuple</code></td><td><code>(Exception,)</code></td><td>Exception types to catch and retry</td></tr>
+                </table>
+                <pre><code><span class="code-keyword">from</span> mohitkhare <span class="code-keyword">import</span> retry
+
+<span class="code-decorator">@retry</span>(max_attempts=<span class="code-number">5</span>, delay=<span class="code-number">0.5</span>, exceptions=(ConnectionError, TimeoutError))
+<span class="code-keyword">def</span> <span class="code-func">fetch_data</span>(url):
+    response = requests.get(url, timeout=<span class="code-number">10</span>)
+    response.raise_for_status()
+    <span class="code-keyword">return</span> response.json()
+
+<span class="code-comment"># Retries up to 5 times with delays: 0.5s, 1s, 2s, 4s</span>
+data = <span class="code-func">fetch_data</span>(<span class="code-string">"https://api.example.com/data"</span>)</code></pre>
+
+                <h3 id="flatten">flatten</h3>
+                <div class="func-signature">
+                    <code>flatten(nested, *, depth=-1) -> list</code>
+                </div>
+                <p class="func-desc">Recursively flatten nested list structures. Supports depth limiting to control how many levels are flattened.</p>
+                <table class="param-table">
+                    <tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr>
+                    <tr><td><code>nested</code></td><td><code>list</code></td><td>required</td><td>Nested list structure</td></tr>
+                    <tr><td><code>depth</code></td><td><code>int</code></td><td><code>-1</code></td><td>Maximum depth to flatten (-1 for unlimited)</td></tr>
+                </table>
+                <pre><code><span class="code-keyword">from</span> mohitkhare <span class="code-keyword">import</span> flatten
+
+<span class="code-func">flatten</span>([[<span class="code-number">1</span>, <span class="code-number">2</span>], [<span class="code-number">3</span>, [<span class="code-number">4</span>, <span class="code-number">5</span>]]])
+<span class="code-output"># [1, 2, 3, 4, 5]</span>
+
+<span class="code-comment"># Flatten only one level deep</span>
+<span class="code-func">flatten</span>([[<span class="code-number">1</span>, [<span class="code-number">2</span>, [<span class="code-number">3</span>]]], <span class="code-number">4</span>], depth=<span class="code-number">1</span>)
+<span class="code-output"># [1, [2, [3]], 4]</span></code></pre>
+
+                <h3 id="chunk_list">chunk_list</h3>
+                <div class="func-signature">
+                    <code>chunk_list(items, size) -> list[list[T]]</code>
+                </div>
+                <p class="func-desc">Split a list into evenly-sized chunks. The last chunk may be smaller if the list length is not evenly divisible.</p>
+                <table class="param-table">
+                    <tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr>
+                    <tr><td><code>items</code></td><td><code>list</code></td><td>required</td><td>Input list</td></tr>
+                    <tr><td><code>size</code></td><td><code>int</code></td><td>required</td><td>Maximum items per chunk</td></tr>
+                </table>
+                <pre><code><span class="code-keyword">from</span> mohitkhare <span class="code-keyword">import</span> chunk_list
+
+<span class="code-func">chunk_list</span>([<span class="code-number">1</span>, <span class="code-number">2</span>, <span class="code-number">3</span>, <span class="code-number">4</span>, <span class="code-number">5</span>], <span class="code-number">2</span>)
+<span class="code-output"># [[1, 2], [3, 4], [5]]</span>
+
+<span class="code-comment"># Batch API calls</span>
+<span class="code-keyword">for</span> batch <span class="code-keyword">in</span> <span class="code-func">chunk_list</span>(user_ids, <span class="code-number">100</span>):
+    api.bulk_fetch(batch)</code></pre>
+
+                <h3 id="dedupe">dedupe</h3>
+                <div class="func-signature">
+                    <code>dedupe(items, *, key=None) -> list[T]</code>
+                </div>
+                <p class="func-desc">Remove duplicates from a list while preserving the original order. Optionally accepts a key function for custom comparison.</p>
+                <table class="param-table">
+                    <tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr>
+                    <tr><td><code>items</code></td><td><code>list</code></td><td>required</td><td>Input list</td></tr>
+                    <tr><td><code>key</code></td><td><code>Callable</code></td><td><code>None</code></td><td>Function to compute comparison key</td></tr>
+                </table>
+                <pre><code><span class="code-keyword">from</span> mohitkhare <span class="code-keyword">import</span> dedupe
+
+<span class="code-func">dedupe</span>([<span class="code-number">3</span>, <span class="code-number">1</span>, <span class="code-number">2</span>, <span class="code-number">1</span>, <span class="code-number">3</span>])
+<span class="code-output"># [3, 1, 2]</span>
+
+<span class="code-comment"># Case-insensitive deduplication</span>
+<span class="code-func">dedupe</span>([<span class="code-string">"Apple"</span>, <span class="code-string">"apple"</span>, <span class="code-string">"Banana"</span>], key=str.lower)
+<span class="code-output"># ['Apple', 'Banana']</span></code></pre>
+            </section>
+
+            <!-- Full API Reference -->
+            <section>
+                <h2>Module Structure</h2>
+                <pre><code>mohitkhare/
+    __init__.py      <span class="code-comment"># re-exports everything</span>
+    text.py          <span class="code-comment"># slugify, truncate, chunk_text, word_count, reading_time</span>
+    tokens.py        <span class="code-comment"># estimate_tokens, estimate_cost</span>
+    dev.py           <span class="code-comment"># timer, retry, flatten, chunk_list, dedupe</span></code></pre>
+                <p>All public functions are re-exported from the top-level package. You can import directly from <code>mohitkhare</code> or from the specific submodule.</p>
+                <pre><code><span class="code-comment"># Both work the same</span>
+<span class="code-keyword">from</span> mohitkhare <span class="code-keyword">import</span> slugify
+<span class="code-keyword">from</span> mohitkhare.text <span class="code-keyword">import</span> slugify</code></pre>
+            </section>
+
+            <!-- License -->
+            <section>
+                <h2>License</h2>
+                <p>MIT License. See the <a href="https://github.com/arnaudleroy-studio/mohitkhare-python/blob/main/LICENSE" rel="noopener">LICENSE</a> file for details.</p>
+            </section>
+
+            <footer class="doc-footer">
+                <p>
+                    <a href="https://mohitkhare.me">mohitkhare.me</a>
+                    &middot;
+                    <a href="https://mohitkhare.me/blog">Blog</a>
+                    &middot;
+                    <a href="https://pypi.org/project/mohitkhare/">PyPI</a>
+                    &middot;
+                    <a href="https://github.com/arnaudleroy-studio/mohitkhare-python">Source</a>
+                </p>
+            </footer>
+        </main>
+    </div>
+</body>
+</html>
