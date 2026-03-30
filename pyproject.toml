@@ -29,6 +29,7 @@ dependencies = []
 
 [project.urls]
 Homepage = "https://mohitkhare.me"
+Documentation = "https://mohitkhare.readthedocs.io/"
 Blog = "https://mohitkhare.me/blog"
 Repository = "https://github.com/arnaudleroy-studio/mohitkhare-python"
 "Bug Tracker" = "https://github.com/arnaudleroy-studio/mohitkhare-python/issues"
